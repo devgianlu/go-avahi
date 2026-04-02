@@ -17,6 +17,7 @@ import (
 	"unsafe"
 )
 
+// #include <stdlib.h>
 // #include <avahi-client/client.h>
 // #include <avahi-common/thread-watch.h>
 //
@@ -182,6 +183,17 @@ func (clnt *Client) GetHostName() string {
 
 	s := C.avahi_client_get_host_name(clnt.avahiClient)
 	return C.GoString(s)
+}
+
+// SetHostName sets host name.
+func (clnt *Client) SetHostName(name string) {
+	clnt.begin()
+	defer clnt.end()
+
+	cName := C.CString(name)
+	defer C.free(unsafe.Pointer(cName))
+
+	C.avahi_client_set_host_name(clnt.avahiClient, cName)
 }
 
 // GetDomainName returns domain name (e.g., "local")
